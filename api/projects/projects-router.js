@@ -19,25 +19,26 @@ router.get('/:id', validateId, (req,res,next)=> {
     .catch(next);
 })
 
-// - Returns the newly created project as the body of the response.
-// - If the request body is missing any of the required fields it responds 
-// with a status code 400.
-router.post('/', (req,res)=> {
-    res.send('POST')
+router.post('/', validateBody, (req,res)=> {
+    Projects.insert(req.body)
+    .then(project => {
+        res.status(201).json(project)
+    })
 })
   
 router.put('/:id', validateId, validateBody, (req,res)=> {
-    console.log(req.body.completed)
     Projects.update(req.params.id, req.body)
     .then(project => {
         res.status(200).json(project)
     })
 })
 
-// - Returns no response body.
-// - If there is no project with the given `id` it responds with a status code 404.
-router.delete('/:id', (req,res)=> {
-    res.send('DELETE')
+router.delete('/:id', validateId, (req,res,next)=> {
+    Projects.remove(req.params.id)
+    .then(() => {
+        res.status(200).json()
+    })
+    .catch(next);
 })
 
 // - Returns an array of actions (could be empty) belonging to a project with the given `id`.
