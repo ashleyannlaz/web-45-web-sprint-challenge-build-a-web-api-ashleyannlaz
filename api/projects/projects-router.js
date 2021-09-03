@@ -1,6 +1,6 @@
 const express = require("express");
 const { validateId, validateBody } = require("./projects-middleware.js");
-const router = express();
+const router = express.Router();
 const Projects = require("./projects-model.js");
 
 router.get("/", (req, res, next) => {
