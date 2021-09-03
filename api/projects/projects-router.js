@@ -1,4 +1,5 @@
 const express = require('express');
+const { validateId, validateBody } = require('./projects-middleware.js');
 const router = express();
 const Projects = require('./projects-model.js');
 
@@ -10,14 +11,10 @@ router.get("/", (req, res, next) => {
     .catch(next);
   });
 
-router.get('/:id', (req,res,next)=> {
+router.get('/:id', validateId, (req,res,next)=> {
     Projects.get(req.params.id)
     .then(project => {
-        if(project){ 
             res.status(200).json(project)
-        } else {
-            res.status(404).json('Project not found')
-        }
     })
     .catch(next);
 })
@@ -29,12 +26,12 @@ router.post('/', (req,res)=> {
     res.send('POST')
 })
   
-// - Returns the updated project as the body of the response.
-// - If there is no project with the given `id` it responds with a status code 404.
-// - If the request body is missing any of the required fields it responds 
-// with a status code 400.
-router.put('/:id', (req,res)=> {
-    res.send('PUT')
+router.put('/:id', validateId, validateBody, (req,res)=> {
+    console.log(req.body.completed)
+    Projects.update(req.params.id, req.body)
+    .then(project => {
+        res.status(200).json(project)
+    })
 })
 
 // - Returns no response body.
