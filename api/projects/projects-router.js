@@ -41,10 +41,12 @@ router.delete('/:id', validateId, (req,res,next)=> {
     .catch(next);
 })
 
-// - Returns an array of actions (could be empty) belonging to a project with the given `id`.
-// - If there is no project with the given `id` it responds with a status code 404.
-router.get('/:id/actions', (req,res)=> {
-    res.send('get')
+router.get('/:id/actions',validateId, (req,res,next)=> {
+    Projects.getProjectActions(req.params.id)
+    .then(actions => {
+        res.status(200).json(actions)
+    })
+    .catch(next);
 })
 
 // eslint-disable-next-line
