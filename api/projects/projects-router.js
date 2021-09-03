@@ -1,17 +1,25 @@
 const express = require('express');
 const router = express();
+const Projects = require('./projects-model.js');
 
-// - Returns an array of projects as the body of the response.
-// - If there are no projects it responds with an empty array.
-router.get("/", (req, res) => {
-    res.send('Returns an array of projects as the body of the response')
+router.get("/", (req, res, next) => {
+    Projects.get()
+    .then(projects => {
+        res.status(200).json(projects)
+    })
+    .catch(next);
   });
 
-//   - Returns a project with the given `id` as the body of the response.
-//   - If there is no project with the given `id` it responds with a status code 404.
-router.get('/:id', (req,res)=> {
-    res.send('GET')
-
+router.get('/:id', (req,res,next)=> {
+    Projects.get(req.params.id)
+    .then(project => {
+        if(project){ 
+            res.status(200).json(project)
+        } else {
+            res.status(404).json('Project not found')
+        }
+    })
+    .catch(next);
 })
 
 // - Returns the newly created project as the body of the response.
@@ -41,5 +49,13 @@ router.get('/:id/actions', (req,res)=> {
     res.send('get')
 })
 
+// eslint-disable-next-line
+router.use((err, req, res, next) => {
+    console.log(err.message);
+    res.status(err.status || 500).json({
+      message: err.message,
+      customMessage: "Something in users router!",
+    });
+  });
 
 module.exports = router;
